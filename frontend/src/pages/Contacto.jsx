@@ -11,8 +11,12 @@ export default function Contacto() {
           <p>Sanabria 3116, Piso 2, Depto C<br />Villa Devoto, Capital Federal</p>
         </div>
         <div className="card">
-          <h3>Teléfono</h3>
+          <h3>Teléfono de línea</h3>
           <p>011-3970-5956</p>
+        </div>
+        <div className="card">
+          <h3>WhatsApp</h3>
+          <p>11 2789-0856</p>
         </div>
         <div className="card">
           <h3>Mail</h3>
