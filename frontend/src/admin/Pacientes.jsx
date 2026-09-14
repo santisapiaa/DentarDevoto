@@ -3,6 +3,15 @@ import { getPacientes, createPaciente, updatePaciente, deletePaciente } from '..
 
 const FORM_VACIO = { nombre: '', telefono: '', email: '' }
 
+// Ojo: NO usar `new Date(fechaISO)` acá. ultima_visita es una fecha sin hora;
+// el backend la manda como medianoche UTC, y un objeto Date la reinterpreta
+// en el huso horario del navegador, corriendo el día para atrás en Argentina (UTC-3).
+function formatFecha(fechaISO) {
+  if (!fechaISO) return '—'
+  const [anio, mes, dia] = fechaISO.slice(0, 10).split('-')
+  return `${dia}/${mes}/${anio}`
+}
+
 // Estructura de campos pendiente de definir con un fichero real
 // (historia clínica, tratamientos, etc.) — hoy son los datos básicos.
 export default function Pacientes() {
@@ -130,7 +139,7 @@ export default function Pacientes() {
               <tr key={p.id}>
                 <td>{p.nombre}</td>
                 <td>{p.telefono || '—'}</td>
-                <td>{p.ultima_visita ? new Date(p.ultima_visita).toLocaleDateString('es-AR') : '—'}</td>
+                <td>{formatFecha(p.ultima_visita)}</td>
                 <td style={{ display: 'flex', gap: 12 }}>
                   <a href="#" onClick={(e) => { e.preventDefault(); empezarEdicion(p) }}>Editar</a>
                   <a href="#" onClick={(e) => { e.preventDefault(); handleDelete(p.id) }}>Eliminar</a>
