@@ -69,10 +69,17 @@ export const deletePaciente = (id) => request(`/pacientes/${id}`, { method: 'DEL
 
 // Odontograma
 export const getOdontograma = (pacienteId) => request(`/pacientes/${pacienteId}/odontograma`, { auth: true })
-export const setPiezaOdontograma = (pacienteId, tipo, pieza, condicion) =>
-  request(`/pacientes/${pacienteId}/odontograma/${tipo}/${pieza}`, { method: 'PUT', body: { condicion }, auth: true })
-export const borrarPiezaOdontograma = (pacienteId, tipo, pieza) =>
-  request(`/pacientes/${pacienteId}/odontograma/${tipo}/${pieza}`, { method: 'DELETE', auth: true })
+export const setSuperficieOdontograma = (pacienteId, tipo, pieza, superficie, condicion) =>
+  request(`/pacientes/${pacienteId}/odontograma/${tipo}/${pieza}/${superficie}`, { method: 'PUT', body: { condicion }, auth: true })
+export const borrarSuperficieOdontograma = (pacienteId, tipo, pieza, superficie) =>
+  request(`/pacientes/${pacienteId}/odontograma/${tipo}/${pieza}/${superficie}`, { method: 'DELETE', auth: true })
+
+// Cuenta corriente
+export const getCuentaCorriente = (pacienteId) => request(`/pacientes/${pacienteId}/cuenta-corriente`, { auth: true })
+export const createMovimiento = (pacienteId, data) =>
+  request(`/pacientes/${pacienteId}/cuenta-corriente`, { method: 'POST', body: data, auth: true })
+export const deleteMovimiento = (pacienteId, id) =>
+  request(`/pacientes/${pacienteId}/cuenta-corriente/${id}`, { method: 'DELETE', auth: true })
 
 // Turnos
 export const getTurnos = () => request('/turnos', { auth: true })

@@ -9,7 +9,8 @@ const ESTADOS_VALIDOS = ['confirmado', 'cancelado', 'atendido']
 const SELECT_TURNO = `
   SELECT
     t.id, t.tratamiento, t.fecha_hora, t.notas, t.estado, t.creado_en,
-    t.paciente_id, COALESCE(p.nombre, t.paciente_nombre) AS paciente_nombre,
+    t.paciente_id,
+    COALESCE(NULLIF(TRIM(CONCAT(p.apellido, ' ', p.nombre)), ''), t.paciente_nombre) AS paciente_nombre,
     t.profesional_id, pr.nombre AS profesional_nombre
   FROM turnos t
   LEFT JOIN pacientes p ON p.id = t.paciente_id
@@ -21,8 +22,9 @@ const SELECT_TURNO = `
 // se queda sin nombre (la columna paciente_id pasa a NULL por el ON DELETE SET NULL).
 async function resolverNombrePaciente(paciente_id, paciente_nombre) {
   if (!paciente_id) return paciente_nombre || null
-  const { rows } = await pool.query('SELECT nombre FROM pacientes WHERE id = $1', [paciente_id])
-  return rows[0]?.nombre || null
+  const { rows } = await pool.query('SELECT apellido, nombre FROM pacientes WHERE id = $1', [paciente_id])
+  if (!rows[0]) return null
+  return `${rows[0].apellido || ''} ${rows[0].nombre || ''}`.trim() || null
 }
 
 // Todos los turnos se coordinan por WhatsApp; esto es el registro interno
