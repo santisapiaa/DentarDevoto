@@ -75,6 +75,7 @@ export default function Usuarios() {
       {loading ? (
         <p>Cargando…</p>
       ) : (
+        <div className="table-scroll">
         <table>
           <thead>
             <tr>
@@ -93,6 +94,7 @@ export default function Usuarios() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   )

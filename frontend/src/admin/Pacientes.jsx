@@ -108,6 +108,7 @@ export default function Pacientes() {
       {loading ? (
         <p>Cargando…</p>
       ) : (
+        <div className="table-scroll">
         <table>
           <thead>
             <tr>
@@ -134,6 +135,7 @@ export default function Pacientes() {
             )}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   )

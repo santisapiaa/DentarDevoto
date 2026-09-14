@@ -93,6 +93,7 @@ export default function CuentaCorriente({ pacienteId }) {
         <p>Cargando…</p>
       ) : (
         <>
+          <div className="table-scroll">
           <table>
             <thead>
               <tr>
@@ -120,6 +121,7 @@ export default function CuentaCorriente({ pacienteId }) {
               )}
             </tbody>
           </table>
+          </div>
           {movimientos.length > 0 && (
             <p style={{ marginTop: 12 }}><strong>Saldo actual: {formatMoneda(saldoFinal)}</strong></p>
           )}

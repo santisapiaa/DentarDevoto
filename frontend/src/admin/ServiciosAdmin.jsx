@@ -105,6 +105,7 @@ export default function ServiciosAdmin() {
       {loading ? (
         <p>Cargando…</p>
       ) : (
+        <div className="table-scroll">
         <table>
           <thead>
             <tr>
@@ -131,6 +132,7 @@ export default function ServiciosAdmin() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   )

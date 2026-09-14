@@ -102,6 +102,26 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
   color: var(--accent-dark);
 }
 
+.navbar__toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.navbar__toggle span {
+  display: block;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -165,7 +185,25 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
 
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; }
-  .navbar__links { display: none; }
+
+  .navbar__toggle { display: flex; }
+
+  .navbar__links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: 4px 24px 20px;
+  }
+  .navbar__links.is-open { display: flex; }
+  .navbar__links a:not(.btn) { padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .navbar__links .btn { margin-top: 14px; justify-content: center; }
 }
 
 /* Cards de servicios / profesionales */
@@ -253,6 +291,19 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
 .admin-sidebar a:hover, .admin-sidebar a.active { color: #fff; }
 
 .admin-content { padding: 40px; }
+
+@media (max-width: 720px) {
+  .admin-layout { grid-template-columns: 1fr; }
+  .admin-sidebar { padding: 16px 20px; }
+  .admin-sidebar nav { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 12px !important; }
+  .admin-sidebar a { padding: 6px 0; }
+  .admin-content { padding: 20px 16px; }
+}
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
 table {
   width: 100%;
