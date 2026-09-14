@@ -1,13 +1,13 @@
 :root {
   --bg: #FFFFFF;
-  --bg-alt: #EFF7FB;
+  --bg-alt: #EAF6F3;
   --surface: #FFFFFF;
-  --text: #0F2D45;
-  --text-soft: #4C6579;
-  --accent: #14A8DA;
-  --accent-dark: #0A5A96;
-  --gold: #0A5A96;
-  --line: #D7E6EE;
+  --text: #0F2B26;
+  --text-soft: #4C6B63;
+  --accent: #14A897;
+  --accent-dark: #0B7063;
+  --gold: #0B7063;
+  --line: #D3E8E3;
 
   --font-display: "Manrope", "Inter", -apple-system, sans-serif;
   --font-body: "Inter", -apple-system, sans-serif;
