@@ -1,13 +1,13 @@
 import { NavLink } from 'react-router-dom'
 import { buildWhatsappLink } from '../lib/whatsapp.js'
-import logoDentar from '../assets/logo-dentar.png'
+import iconoDentar from '../assets/icono-dentar-blanco.png'
 
 export default function Navbar() {
   return (
     <nav className="navbar">
       <NavLink to="/" className="navbar__brand">
-        <img className="navbar__logo" src={logoDentar} alt="Dentar" />
-        <span className="navbar__brand-text">Devoto</span>
+        <img className="navbar__logo" src={iconoDentar} alt="Dentar" />
+        <span className="navbar__brand-text">Dentar Devoto</span>
       </NavLink>
       <div className="navbar__links">
         <NavLink to="/servicios">Servicios</NavLink>
