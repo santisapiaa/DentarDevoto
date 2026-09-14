@@ -84,8 +84,21 @@ router.patch('/:id/estado', requireAuth, async (req, res) => {
     return res.status(400).json({ error: `Estado inválido. Usá: ${ESTADOS_VALIDOS.join(', ')}` })
   }
   try {
-    const { rows } = await pool.query('UPDATE turnos SET estado = $1 WHERE id = $2 RETURNING id', [estado, req.params.id])
+    const { rows } = await pool.query(
+      'UPDATE turnos SET estado = $1 WHERE id = $2 RETURNING id, paciente_id, fecha_hora',
+      [estado, req.params.id]
+    )
     if (!rows[0]) return res.status(404).json({ error: 'Turno no encontrado' })
+
+    // Al marcar un turno como atendido, actualiza la última visita del paciente
+    // (sin retroceder si ya tenía una visita más reciente registrada).
+    if (estado === 'atendido' && rows[0].paciente_id) {
+      await pool.query(
+        'UPDATE pacientes SET ultima_visita = GREATEST(ultima_visita, $2::date) WHERE id = $1',
+        [rows[0].paciente_id, rows[0].fecha_hora]
+      )
+    }
+
     const { rows: full } = await pool.query(`${SELECT_TURNO} WHERE t.id = $1`, [rows[0].id])
     res.json(full[0])
   } catch (err) {
