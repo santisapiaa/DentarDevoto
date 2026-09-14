@@ -320,7 +320,7 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
 .admin-content { padding: 40px; }
 
 @media (max-width: 720px) {
-  .admin-layout { grid-template-columns: minmax(0, 1fr); }
+  .admin-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
   .admin-sidebar { padding: 14px 20px; }
   .admin-sidebar__toggle { display: flex; }
   .admin-sidebar__body { display: none; }
