@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
+    "migrate": "node src/scripts/migrar.js",
     "crear-admin": "node src/scripts/crear-admin.js"
   },
   "dependencies": {

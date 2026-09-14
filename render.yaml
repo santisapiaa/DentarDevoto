@@ -1,0 +1,25 @@
+databases:
+  - name: dentardevoto-db
+    plan: free
+    databaseName: consultorio
+    user: consultorio
+
+services:
+  - type: web
+    name: dentardevoto-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dentardevoto-db
+          property: connectionString
+      - key: PGSSL
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false

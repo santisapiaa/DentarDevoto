@@ -1,5 +1,9 @@
 const TOKEN_KEY = 'token'
 
+// Vacío en local (usa el proxy de Vite hacia localhost:4000).
+// En Vercel, VITE_API_URL apunta al backend deployado (ej. Render).
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY)
 }
@@ -23,7 +27,7 @@ async function request(path, { method = 'GET', body, auth = false } = {}) {
     if (token) headers.Authorization = `Bearer ${token}`
   }
 
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`${API_BASE}/api${path}`, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,

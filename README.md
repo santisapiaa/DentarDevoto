@@ -49,6 +49,27 @@ npm run dev
 
 Corre en `http://localhost:5173` y ya tiene configurado el proxy hacia `/api` -> `localhost:4000`.
 
+## 4. Deploy (Render + Vercel)
+
+**Backend en Render:**
+
+1. En el dashboard de Render: *New +* → *Blueprint* → elegir este repo. Lee `render.yaml` y crea solo, en un paso, la Postgres (`dentardevoto-db`) y el servicio web (`dentardevoto-api`).
+2. Completar a mano la variable `FRONTEND_URL` del servicio con la URL que te va a dar Vercel (podés dejarla pendiente y completarla después del paso 2).
+3. Una vez que el servicio esté arriba, aplicar el schema contra esa base (desde tu máquina, apuntando a la `DATABASE_URL` externa que te muestra Render):
+   ```bash
+   cd backend
+   DATABASE_URL="<external-url-de-render>" PGSSL=true npm run migrate
+   DATABASE_URL="<external-url-de-render>" PGSSL=true npm run crear-admin -- tu-correo@ejemplo.com unaContraseñaSegura admin
+   ```
+
+**Frontend en Vercel:**
+
+1. Importar el repo, con **Root Directory = `frontend`**.
+2. En variables de entorno del proyecto, agregar `VITE_API_URL` con la URL pública del backend en Render (ej. `https://dentardevoto-api.onrender.com`, sin barra final).
+3. Deploy. Una vez que tengas la URL final de Vercel, volver a Render y completar `FRONTEND_URL` con esa URL (y redeploy del backend para que tome el cambio de CORS).
+
+Nota: el plan free de Render "duerme" el backend sin uso — el primer request después de un rato tarda unos segundos en responder mientras arranca.
+
 ## Qué está armado
 
 - Sitio público: Home, Servicios y Profesionales conectados a la API real (`/api/servicios`, `/api/profesionales`), Contacto con dirección y mapa reales.
@@ -65,4 +86,4 @@ Corre en `http://localhost:5173` y ya tiene configurado el proxy hacia `/api` ->
 - Confirmar si 011-3970-5956 tiene WhatsApp activo, o conseguir un número de WhatsApp dedicado para la sucursal (hoy los CTAs apuntan a ese número).
 - Fotos reales de los profesionales (Dr. Mariano Sapia, Dra. María Laura Perazzi) y del consultorio — hoy la imagen del hero es un placeholder con los colores del logo.
 - Matrícula (MN) y universidad de cada profesional para sumar en `/profesionales`.
-- Todavía no hay tests automatizados ni control de versiones (`git init`) — recomendado antes de seguir sumando features.
+- Todavía no hay tests automatizados.
