@@ -65,20 +65,32 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 24px;
-  border-bottom: 1px solid var(--line);
+  padding: 16px 24px;
   position: sticky;
   top: 0;
-  background: rgba(247, 248, 246, 0.9);
-  backdrop-filter: blur(6px);
+  background: var(--accent-dark);
   z-index: 50;
 }
 
 .navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__logo {
+  height: 34px;
+  width: auto;
+  display: block;
+}
+
+.navbar__brand-text {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.3rem;
-  color: var(--accent-dark);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .navbar__links {
@@ -89,13 +101,13 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
 }
 
 .navbar__links a {
-  color: var(--text-soft);
+  color: rgba(255, 255, 255, 0.8);
   transition: color 0.15s ease;
 }
 
 .navbar__links a:hover,
 .navbar__links a.active {
-  color: var(--accent-dark);
+  color: #fff;
 }
 
 /* Buttons */
@@ -186,10 +198,26 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
 }
 
 .footer {
-  border-top: 1px solid var(--line);
-  padding: 40px 0;
+  background: var(--accent-dark);
+  padding: 36px 0;
   font-size: 0.9rem;
-  color: var(--text-soft);
+}
+
+.footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.footer__logo {
+  height: 28px;
+  width: auto;
+  display: block;
+}
+
+.footer p {
+  color: rgba(255, 255, 255, 0.75);
 }
 
 /* WhatsApp floating CTA */
