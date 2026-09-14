@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { buildWhatsappLink } from '../lib/whatsapp.js'
+import { buildWhatsappLink, MENSAJE_PEDIR_TURNO } from '../lib/whatsapp.js'
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
           <div style={{ display: 'flex', gap: 14, marginTop: 28 }}>
             <a
               className="btn btn--primary"
-              href={buildWhatsappLink('Hola! Quiero sacar un turno en Dentar Devoto')}
+              href={buildWhatsappLink(MENSAJE_PEDIR_TURNO)}
               target="_blank"
               rel="noreferrer"
             >

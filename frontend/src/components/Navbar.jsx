@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { buildWhatsappLink } from '../lib/whatsapp.js'
+import { buildWhatsappLink, MENSAJE_PEDIR_TURNO } from '../lib/whatsapp.js'
 import logoDentarDevoto from '../assets/logo-dentar-devoto.png'
 
 export default function Navbar() {
@@ -30,7 +30,7 @@ export default function Navbar() {
         <NavLink to="/login" onClick={cerrar}>Ingresar</NavLink>
         <a
           className="btn btn--primary"
-          href={buildWhatsappLink('Hola! Quiero consultar por un turno en Dentar Devoto')}
+          href={buildWhatsappLink(MENSAJE_PEDIR_TURNO)}
           target="_blank"
           rel="noreferrer"
           onClick={cerrar}
