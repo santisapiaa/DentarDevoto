@@ -54,7 +54,8 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
 }
 
 .section {
-  padding: 88px 0;
+  padding-top: 88px;
+  padding-bottom: 88px;
   border-top: 1px solid var(--line);
 }
 
@@ -155,7 +156,8 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
   grid-template-columns: 1.1fr 0.9fr;
   gap: 48px;
   align-items: center;
-  padding: 72px 0 96px 0;
+  padding-top: 72px;
+  padding-bottom: 96px;
 }
 
 .hero__eyebrow {
