@@ -193,19 +193,22 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
   .navbar__links {
     display: none;
     position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
+    top: calc(100% + 10px);
+    right: 16px;
+    left: auto;
+    min-width: 220px;
+    max-width: calc(100vw - 32px);
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    background: var(--bg);
-    border-bottom: 1px solid var(--line);
-    padding: 4px 24px 20px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 16px 32px rgba(15, 43, 38, 0.22);
+    padding: 8px;
   }
   .navbar__links.is-open { display: flex; }
-  .navbar__links a:not(.btn) { padding: 12px 0; border-bottom: 1px solid var(--line); }
-  .navbar__links .btn { margin-top: 14px; justify-content: center; }
+  .navbar__links a:not(.btn) { padding: 12px 10px; border-radius: 10px; border-bottom: 1px solid var(--line); }
+  .navbar__links .btn { margin: 8px 2px 2px; justify-content: center; }
 }
 
 /* Cards de servicios / profesionales */
@@ -282,6 +285,7 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
   background: var(--text);
   color: #fff;
   padding: 28px 20px;
+  position: relative;
 }
 
 .admin-sidebar a {
@@ -323,10 +327,23 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
   .admin-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
   .admin-sidebar { padding: 14px 20px; }
   .admin-sidebar__toggle { display: flex; }
-  .admin-sidebar__body { display: none; }
+  .admin-sidebar__body {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 16px;
+    left: auto;
+    min-width: 220px;
+    max-width: calc(100vw - 32px);
+    background: var(--text);
+    border-radius: 18px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+    padding: 14px 16px;
+    z-index: 70;
+  }
   .admin-sidebar__body.is-open { display: block; }
-  .admin-sidebar nav { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 16px !important; }
-  .admin-sidebar a { padding: 6px 0; }
+  .admin-sidebar nav { display: flex; flex-direction: column; margin-top: 0 !important; }
+  .admin-sidebar a { padding: 8px 4px; border-radius: 8px; }
   .admin-content { padding: 20px 16px; }
 }
 
