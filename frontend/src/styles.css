@@ -195,17 +195,11 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
   font-size: 0.9rem;
 }
 
-.footer__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
 .footer__logo {
-  height: 28px;
+  height: 34px;
   width: auto;
   display: block;
+  margin-bottom: 16px;
 }
 
 .footer p {
