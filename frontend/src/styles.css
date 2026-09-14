@@ -66,29 +66,23 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
+  border-bottom: 1px solid var(--line);
   position: sticky;
   top: 0;
-  background: var(--accent-dark);
+  background: rgba(247, 248, 246, 0.9);
+  backdrop-filter: blur(6px);
   z-index: 50;
 }
 
 .navbar__brand {
   display: flex;
   align-items: center;
-  gap: 10px;
 }
 
 .navbar__logo {
   height: 38px;
   width: auto;
   display: block;
-}
-
-.navbar__brand-text {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.15rem;
-  color: #fff;
 }
 
 .navbar__links {
@@ -98,14 +92,14 @@ p { margin: 0 0 1em 0; color: var(--text-soft); max-width: 62ch; }
   font-size: 0.95rem;
 }
 
-.navbar__links a {
-  color: rgba(255, 255, 255, 0.8);
+.navbar__links a:not(.btn) {
+  color: var(--text-soft);
   transition: color 0.15s ease;
 }
 
-.navbar__links a:hover,
-.navbar__links a.active {
-  color: #fff;
+.navbar__links a:not(.btn):hover,
+.navbar__links a:not(.btn).active {
+  color: var(--accent-dark);
 }
 
 /* Buttons */
