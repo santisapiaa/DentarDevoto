@@ -6,7 +6,7 @@ export default function Home() {
     <>
       <section className="container hero">
         <div>
-          <div className="hero__eyebrow">Dentar Odontología Integral · Devoto</div>
+          <div className="hero__eyebrow">Dentar Devoto · Odontología Integral</div>
           <h1>Tu sonrisa, en manos de confianza.</h1>
           <p>
             Atención odontológica integral en Villa Devoto, parte de la red

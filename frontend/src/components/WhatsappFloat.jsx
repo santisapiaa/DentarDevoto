@@ -1,9 +1,10 @@
 import { buildWhatsappLink } from '../lib/whatsapp.js'
+import iconoWhatsapp from '../assets/whatsapp.png'
 
 export default function WhatsappFloat({ mensaje = 'Hola! Quiero consultar por un turno en Dentar Devoto' }) {
   return (
-    <a className="wa-float" href={buildWhatsappLink(mensaje)} target="_blank" rel="noreferrer">
-      Escribinos por WhatsApp
+    <a className="wa-float" href={buildWhatsappLink(mensaje)} target="_blank" rel="noreferrer" aria-label="Escribinos por WhatsApp">
+      <img src={iconoWhatsapp} alt="WhatsApp" />
     </a>
   )
 }
