@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
-import { getPacientes, createPaciente, deletePaciente } from '../lib/api.js'
+import { useEffect, useMemo, useState } from 'react'
+import { getPacientes, createPaciente, updatePaciente, deletePaciente } from '../lib/api.js'
+
+const FORM_VACIO = { nombre: '', telefono: '', email: '' }
 
 // Estructura de campos pendiente de definir con un fichero real
 // (historia clínica, tratamientos, etc.) — hoy son los datos básicos.
@@ -7,8 +9,10 @@ export default function Pacientes() {
   const [pacientes, setPacientes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [form, setForm] = useState({ nombre: '', telefono: '', email: '' })
+  const [form, setForm] = useState(FORM_VACIO)
+  const [editandoId, setEditandoId] = useState(null)
   const [guardando, setGuardando] = useState(false)
+  const [busqueda, setBusqueda] = useState('')
 
   function cargar() {
     setLoading(true)
@@ -20,13 +24,35 @@ export default function Pacientes() {
 
   useEffect(cargar, [])
 
+  const pacientesFiltrados = useMemo(() => {
+    const q = busqueda.trim().toLowerCase()
+    if (!q) return pacientes
+    return pacientes.filter((p) =>
+      p.nombre.toLowerCase().includes(q) || (p.telefono || '').toLowerCase().includes(q)
+    )
+  }, [pacientes, busqueda])
+
+  function empezarEdicion(p) {
+    setEditandoId(p.id)
+    setForm({ nombre: p.nombre, telefono: p.telefono || '', email: p.email || '' })
+  }
+
+  function cancelarEdicion() {
+    setEditandoId(null)
+    setForm(FORM_VACIO)
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     if (!form.nombre) return
     setGuardando(true)
     try {
-      await createPaciente(form)
-      setForm({ nombre: '', telefono: '', email: '' })
+      if (editandoId) {
+        await updatePaciente(editandoId, form)
+      } else {
+        await createPaciente(form)
+      }
+      cancelarEdicion()
       cargar()
     } catch (err) {
       setError(err.message)
@@ -39,6 +65,7 @@ export default function Pacientes() {
     if (!window.confirm('¿Eliminar este paciente del fichero?')) return
     try {
       await deletePaciente(id)
+      if (editandoId === id) cancelarEdicion()
       cargar()
     } catch (err) {
       setError(err.message)
@@ -63,10 +90,27 @@ export default function Pacientes() {
           <label htmlFor="email">Email</label>
           <input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         </div>
-        <button className="btn btn--primary" type="submit" disabled={guardando}>
-          {guardando ? 'Guardando…' : 'Agregar paciente'}
-        </button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button className="btn btn--primary" type="submit" disabled={guardando}>
+            {guardando ? 'Guardando…' : editandoId ? 'Guardar cambios' : 'Agregar paciente'}
+          </button>
+          {editandoId && (
+            <button className="btn btn--ghost" type="button" onClick={cancelarEdicion}>
+              Cancelar edición
+            </button>
+          )}
+        </div>
       </form>
+
+      <div className="form-field" style={{ maxWidth: 320 }}>
+        <label htmlFor="busqueda">Buscar</label>
+        <input
+          id="busqueda"
+          placeholder="Nombre o teléfono…"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+      </div>
 
       {error && <p style={{ color: '#B3413A' }}>{error}</p>}
       {loading ? (
@@ -82,16 +126,19 @@ export default function Pacientes() {
             </tr>
           </thead>
           <tbody>
-            {pacientes.map((p) => (
+            {pacientesFiltrados.map((p) => (
               <tr key={p.id}>
                 <td>{p.nombre}</td>
                 <td>{p.telefono || '—'}</td>
                 <td>{p.ultima_visita ? new Date(p.ultima_visita).toLocaleDateString('es-AR') : '—'}</td>
-                <td><a href="#" onClick={(e) => { e.preventDefault(); handleDelete(p.id) }}>Eliminar</a></td>
+                <td style={{ display: 'flex', gap: 12 }}>
+                  <a href="#" onClick={(e) => { e.preventDefault(); empezarEdicion(p) }}>Editar</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleDelete(p.id) }}>Eliminar</a>
+                </td>
               </tr>
             ))}
-            {pacientes.length === 0 && (
-              <tr><td colSpan={4}>Todavía no hay pacientes cargados.</td></tr>
+            {pacientesFiltrados.length === 0 && (
+              <tr><td colSpan={4}>{busqueda ? 'No hay pacientes que coincidan con la búsqueda.' : 'Todavía no hay pacientes cargados.'}</td></tr>
             )}
           </tbody>
         </table>

@@ -1,10 +1,22 @@
 import { useEffect, useState } from 'react'
-import { getTurnos, createTurno, deleteTurno, getPacientes, getProfesionales } from '../lib/api.js'
+import {
+  getTurnos, createTurno, updateTurno, updateTurnoEstado, deleteTurno,
+  getPacientes, getProfesionales,
+} from '../lib/api.js'
 
 // Como los turnos se coordinan por WhatsApp con el asistente, este panel
 // sirve para que el asistente cargue manualmente el turno ya acordado
 // (no hay reserva automática desde la web pública).
-const FORM_INICIAL = { paciente_id: '', paciente_nombre: '', profesional_id: '', tratamiento: '', fecha_hora: '', notas: '' }
+const FORM_VACIO = { paciente_id: '', paciente_nombre: '', profesional_id: '', tratamiento: '', fecha_hora: '', notas: '' }
+
+const ESTADO_LABEL = { confirmado: 'Confirmado', cancelado: 'Cancelado', atendido: 'Atendido' }
+
+// El input datetime-local necesita "YYYY-MM-DDTHH:mm" en hora local.
+function toInputDatetime(fechaHoraISO) {
+  const d = new Date(fechaHoraISO)
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
 
 export default function Turnos() {
   const [turnos, setTurnos] = useState([])
@@ -12,7 +24,8 @@ export default function Turnos() {
   const [profesionales, setProfesionales] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [form, setForm] = useState(FORM_INICIAL)
+  const [form, setForm] = useState(FORM_VACIO)
+  const [editandoId, setEditandoId] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
   function cargar() {
@@ -29,20 +42,42 @@ export default function Turnos() {
 
   useEffect(cargar, [])
 
+  function empezarEdicion(t) {
+    setEditandoId(t.id)
+    setForm({
+      paciente_id: t.paciente_id || '',
+      paciente_nombre: t.paciente_id ? '' : (t.paciente_nombre || ''),
+      profesional_id: t.profesional_id || '',
+      tratamiento: t.tratamiento || '',
+      fecha_hora: toInputDatetime(t.fecha_hora),
+      notas: t.notas || '',
+    })
+  }
+
+  function cancelarEdicion() {
+    setEditandoId(null)
+    setForm(FORM_VACIO)
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     if (!form.fecha_hora || (!form.paciente_id && !form.paciente_nombre)) return
     setGuardando(true)
+    const payload = {
+      paciente_id: form.paciente_id || null,
+      paciente_nombre: form.paciente_id ? null : form.paciente_nombre,
+      profesional_id: form.profesional_id || null,
+      tratamiento: form.tratamiento,
+      fecha_hora: form.fecha_hora,
+      notas: form.notas,
+    }
     try {
-      await createTurno({
-        paciente_id: form.paciente_id || null,
-        paciente_nombre: form.paciente_id ? null : form.paciente_nombre,
-        profesional_id: form.profesional_id || null,
-        tratamiento: form.tratamiento,
-        fecha_hora: form.fecha_hora,
-        notas: form.notas,
-      })
-      setForm(FORM_INICIAL)
+      if (editandoId) {
+        await updateTurno(editandoId, payload)
+      } else {
+        await createTurno(payload)
+      }
+      cancelarEdicion()
       cargar()
     } catch (err) {
       setError(err.message)
@@ -51,10 +86,20 @@ export default function Turnos() {
     }
   }
 
+  async function cambiarEstado(id, estado) {
+    try {
+      await updateTurnoEstado(id, estado)
+      cargar()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   async function handleDelete(id) {
-    if (!window.confirm('¿Eliminar este turno?')) return
+    if (!window.confirm('¿Eliminar este turno? Esta acción no se puede deshacer (para no perder el historial, mejor usá "Cancelar").')) return
     try {
       await deleteTurno(id)
+      if (editandoId === id) cancelarEdicion()
       cargar()
     } catch (err) {
       setError(err.message)
@@ -99,9 +144,16 @@ export default function Turnos() {
           <label htmlFor="notas">Notas</label>
           <textarea id="notas" value={form.notas} onChange={(e) => setForm({ ...form, notas: e.target.value })} />
         </div>
-        <button className="btn btn--primary" type="submit" disabled={guardando}>
-          {guardando ? 'Guardando…' : 'Cargar turno'}
-        </button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button className="btn btn--primary" type="submit" disabled={guardando}>
+            {guardando ? 'Guardando…' : editandoId ? 'Guardar cambios' : 'Cargar turno'}
+          </button>
+          {editandoId && (
+            <button className="btn btn--ghost" type="button" onClick={cancelarEdicion}>
+              Cancelar edición
+            </button>
+          )}
+        </div>
       </form>
 
       {error && <p style={{ color: '#B3413A' }}>{error}</p>}
@@ -115,6 +167,7 @@ export default function Turnos() {
               <th>Profesional</th>
               <th>Tratamiento</th>
               <th>Fecha y hora</th>
+              <th>Estado</th>
               <th></th>
             </tr>
           </thead>
@@ -125,11 +178,24 @@ export default function Turnos() {
                 <td>{t.profesional_nombre || '—'}</td>
                 <td>{t.tratamiento || '—'}</td>
                 <td>{new Date(t.fecha_hora).toLocaleString('es-AR')}</td>
-                <td><a href="#" onClick={(e) => { e.preventDefault(); handleDelete(t.id) }}>Eliminar</a></td>
+                <td>{ESTADO_LABEL[t.estado] || t.estado}</td>
+                <td style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  {t.estado === 'confirmado' && (
+                    <>
+                      <a href="#" onClick={(e) => { e.preventDefault(); cambiarEstado(t.id, 'atendido') }}>Marcar atendido</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); cambiarEstado(t.id, 'cancelado') }}>Cancelar</a>
+                    </>
+                  )}
+                  {(t.estado === 'cancelado' || t.estado === 'atendido') && (
+                    <a href="#" onClick={(e) => { e.preventDefault(); cambiarEstado(t.id, 'confirmado') }}>Reactivar</a>
+                  )}
+                  <a href="#" onClick={(e) => { e.preventDefault(); empezarEdicion(t) }}>Editar</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); handleDelete(t.id) }}>Eliminar</a>
+                </td>
               </tr>
             ))}
             {turnos.length === 0 && (
-              <tr><td colSpan={5}>Todavía no hay turnos cargados.</td></tr>
+              <tr><td colSpan={6}>Todavía no hay turnos cargados.</td></tr>
             )}
           </tbody>
         </table>

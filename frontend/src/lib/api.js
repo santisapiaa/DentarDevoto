@@ -70,6 +70,7 @@ export const deletePaciente = (id) => request(`/pacientes/${id}`, { method: 'DEL
 export const getTurnos = () => request('/turnos', { auth: true })
 export const createTurno = (data) => request('/turnos', { method: 'POST', body: data, auth: true })
 export const updateTurno = (id, data) => request(`/turnos/${id}`, { method: 'PUT', body: data, auth: true })
+export const updateTurnoEstado = (id, estado) => request(`/turnos/${id}/estado`, { method: 'PATCH', body: { estado }, auth: true })
 export const deleteTurno = (id) => request(`/turnos/${id}`, { method: 'DELETE', auth: true })
 
 // Usuarios (staff)

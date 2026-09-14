@@ -39,13 +39,17 @@ CREATE TABLE IF NOT EXISTS pacientes (
 CREATE TABLE IF NOT EXISTS turnos (
   id SERIAL PRIMARY KEY,
   paciente_id INTEGER REFERENCES pacientes(id) ON DELETE SET NULL,
-  paciente_nombre VARCHAR(150), -- se completa a mano si el paciente todavía no está en el fichero
+  paciente_nombre VARCHAR(150), -- copia del nombre al momento de cargar el turno; sobrevive si el paciente se borra del fichero
   profesional_id INTEGER REFERENCES profesionales(id) ON DELETE SET NULL,
   tratamiento VARCHAR(150),
   fecha_hora TIMESTAMP NOT NULL,
   notas TEXT,
+  estado VARCHAR(20) NOT NULL DEFAULT 'confirmado', -- confirmado | cancelado | atendido
   creado_en TIMESTAMP DEFAULT NOW()
 );
+
+-- Migración para bases ya existentes (no toca nada si la columna ya está).
+ALTER TABLE turnos ADD COLUMN IF NOT EXISTS estado VARCHAR(20) NOT NULL DEFAULT 'confirmado';
 
 -- Datos reales de arranque (tratamientos de Dentar y profesionales de la sucursal Devoto).
 -- Los precios no se publican: siempre "Consultar", se coordina por WhatsApp.
