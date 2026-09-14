@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { getServiciosAdmin, createServicio, updateServicio, deleteServicio } from '../lib/api.js'
 
-const FORM_INICIAL = { nombre: '', descripcion: '', precio: 'Consultar' }
+const FORM_VACIO = { nombre: '', descripcion: '', precio: 'Consultar' }
 
 export default function ServiciosAdmin() {
   const [servicios, setServicios] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [form, setForm] = useState(FORM_INICIAL)
+  const [form, setForm] = useState(FORM_VACIO)
+  const [editandoId, setEditandoId] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
   function cargar() {
@@ -20,13 +21,28 @@ export default function ServiciosAdmin() {
 
   useEffect(cargar, [])
 
+  function empezarEdicion(s) {
+    setEditandoId(s.id)
+    setForm({ nombre: s.nombre, descripcion: s.descripcion || '', precio: s.precio || 'Consultar' })
+  }
+
+  function cancelarEdicion() {
+    setEditandoId(null)
+    setForm(FORM_VACIO)
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     if (!form.nombre) return
     setGuardando(true)
     try {
-      await createServicio(form)
-      setForm(FORM_INICIAL)
+      if (editandoId) {
+        const servicio = servicios.find((s) => s.id === editandoId)
+        await updateServicio(editandoId, { ...form, activo: servicio.activo })
+      } else {
+        await createServicio(form)
+      }
+      cancelarEdicion()
       cargar()
     } catch (err) {
       setError(err.message)
@@ -48,6 +64,7 @@ export default function ServiciosAdmin() {
     if (!window.confirm('¿Eliminar este servicio?')) return
     try {
       await deleteServicio(id)
+      if (editandoId === id) cancelarEdicion()
       cargar()
     } catch (err) {
       setError(err.message)
@@ -57,7 +74,7 @@ export default function ServiciosAdmin() {
   return (
     <div>
       <h2>Servicios y precios</h2>
-      <p>Los tratamientos que se muestran en la web pública se marcan como "Activo".</p>
+      <p>Los tratamientos que se muestran en la web pública se marcan como "Activo". El precio es texto libre: podés dejar "Consultar" o poner un valor fijo.</p>
 
       <form onSubmit={handleSubmit} style={{ maxWidth: 480, marginBottom: 32 }}>
         <div className="form-field">
@@ -72,9 +89,16 @@ export default function ServiciosAdmin() {
           <label htmlFor="precio">Precio</label>
           <input id="precio" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} required />
         </div>
-        <button className="btn btn--primary" type="submit" disabled={guardando}>
-          {guardando ? 'Guardando…' : 'Agregar servicio'}
-        </button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button className="btn btn--primary" type="submit" disabled={guardando}>
+            {guardando ? 'Guardando…' : editandoId ? 'Guardar cambios' : 'Agregar servicio'}
+          </button>
+          {editandoId && (
+            <button className="btn btn--ghost" type="button" onClick={cancelarEdicion}>
+              Cancelar edición
+            </button>
+          )}
+        </div>
       </form>
 
       {error && <p style={{ color: '#B3413A' }}>{error}</p>}
@@ -97,6 +121,7 @@ export default function ServiciosAdmin() {
                 <td>{s.precio}</td>
                 <td>{s.activo ? 'Activo' : 'Oculto'}</td>
                 <td style={{ display: 'flex', gap: 12 }}>
+                  <a href="#" onClick={(e) => { e.preventDefault(); empezarEdicion(s) }}>Editar</a>
                   <a href="#" onClick={(e) => { e.preventDefault(); toggleActivo(s) }}>
                     {s.activo ? 'Ocultar' : 'Activar'}
                   </a>
