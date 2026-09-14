@@ -10,6 +10,7 @@ import profesionalesRoutes from './routes/profesionales.js'
 import pacientesRoutes from './routes/pacientes.js'
 import turnosRoutes from './routes/turnos.js'
 import usuariosRoutes from './routes/usuarios.js'
+import odontogramaRoutes from './routes/odontograma.js'
 
 dotenv.config()
 
@@ -44,6 +45,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/servicios', serviciosRoutes)
 app.use('/api/profesionales', profesionalesRoutes)
 app.use('/api/pacientes', pacientesRoutes)
+app.use('/api/pacientes/:pacienteId/odontograma', odontogramaRoutes)
 app.use('/api/turnos', turnosRoutes)
 app.use('/api/usuarios', usuariosRoutes)
 

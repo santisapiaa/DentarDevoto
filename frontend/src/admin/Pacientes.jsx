@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getPacientes, createPaciente, updatePaciente, deletePaciente } from '../lib/api.js'
+import { Link } from 'react-router-dom'
+import { getPacientes, createPaciente, deletePaciente } from '../lib/api.js'
 
 const FORM_VACIO = { nombre: '', telefono: '', email: '' }
 
@@ -12,14 +13,14 @@ function formatFecha(fechaISO) {
   return `${dia}/${mes}/${anio}`
 }
 
-// Estructura de campos pendiente de definir con un fichero real
-// (historia clínica, tratamientos, etc.) — hoy son los datos básicos.
+// Alta rápida (nombre/teléfono/email) para cuando llega el paciente.
+// El resto de la ficha (domicilio, obra social, odontograma, etc.) se completa
+// después en "Ver ficha".
 export default function Pacientes() {
   const [pacientes, setPacientes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [form, setForm] = useState(FORM_VACIO)
-  const [editandoId, setEditandoId] = useState(null)
   const [guardando, setGuardando] = useState(false)
   const [busqueda, setBusqueda] = useState('')
 
@@ -41,27 +42,13 @@ export default function Pacientes() {
     )
   }, [pacientes, busqueda])
 
-  function empezarEdicion(p) {
-    setEditandoId(p.id)
-    setForm({ nombre: p.nombre, telefono: p.telefono || '', email: p.email || '' })
-  }
-
-  function cancelarEdicion() {
-    setEditandoId(null)
-    setForm(FORM_VACIO)
-  }
-
   async function handleSubmit(e) {
     e.preventDefault()
     if (!form.nombre) return
     setGuardando(true)
     try {
-      if (editandoId) {
-        await updatePaciente(editandoId, form)
-      } else {
-        await createPaciente(form)
-      }
-      cancelarEdicion()
+      await createPaciente(form)
+      setForm(FORM_VACIO)
       cargar()
     } catch (err) {
       setError(err.message)
@@ -71,10 +58,9 @@ export default function Pacientes() {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm('¿Eliminar este paciente del fichero?')) return
+    if (!window.confirm('¿Eliminar este paciente del fichero? Se borra también su odontograma.')) return
     try {
       await deletePaciente(id)
-      if (editandoId === id) cancelarEdicion()
       cargar()
     } catch (err) {
       setError(err.message)
@@ -84,7 +70,7 @@ export default function Pacientes() {
   return (
     <div>
       <h2>Pacientes</h2>
-      <p>Fichero de pacientes. Estructura de campos pendiente de definir.</p>
+      <p>Fichero de pacientes. Alta rápida acá abajo; la ficha completa (datos, odontograma) se carga desde "Ver ficha".</p>
 
       <form onSubmit={handleSubmit} style={{ maxWidth: 480, marginBottom: 32 }}>
         <div className="form-field">
@@ -99,16 +85,9 @@ export default function Pacientes() {
           <label htmlFor="email">Email</label>
           <input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         </div>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <button className="btn btn--primary" type="submit" disabled={guardando}>
-            {guardando ? 'Guardando…' : editandoId ? 'Guardar cambios' : 'Agregar paciente'}
-          </button>
-          {editandoId && (
-            <button className="btn btn--ghost" type="button" onClick={cancelarEdicion}>
-              Cancelar edición
-            </button>
-          )}
-        </div>
+        <button className="btn btn--primary" type="submit" disabled={guardando}>
+          {guardando ? 'Guardando…' : 'Agregar paciente'}
+        </button>
       </form>
 
       <div className="form-field" style={{ maxWidth: 320 }}>
@@ -141,7 +120,7 @@ export default function Pacientes() {
                 <td>{p.telefono || '—'}</td>
                 <td>{formatFecha(p.ultima_visita)}</td>
                 <td style={{ display: 'flex', gap: 12 }}>
-                  <a href="#" onClick={(e) => { e.preventDefault(); empezarEdicion(p) }}>Editar</a>
+                  <Link to={`/admin/pacientes/${p.id}`}>Ver ficha</Link>
                   <a href="#" onClick={(e) => { e.preventDefault(); handleDelete(p.id) }}>Eliminar</a>
                 </td>
               </tr>

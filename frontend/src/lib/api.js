@@ -62,9 +62,17 @@ export const getProfesionales = () => request('/profesionales')
 
 // Pacientes
 export const getPacientes = () => request('/pacientes', { auth: true })
+export const getPaciente = (id) => request(`/pacientes/${id}`, { auth: true })
 export const createPaciente = (data) => request('/pacientes', { method: 'POST', body: data, auth: true })
 export const updatePaciente = (id, data) => request(`/pacientes/${id}`, { method: 'PUT', body: data, auth: true })
 export const deletePaciente = (id) => request(`/pacientes/${id}`, { method: 'DELETE', auth: true })
+
+// Odontograma
+export const getOdontograma = (pacienteId) => request(`/pacientes/${pacienteId}/odontograma`, { auth: true })
+export const setPiezaOdontograma = (pacienteId, tipo, pieza, condicion) =>
+  request(`/pacientes/${pacienteId}/odontograma/${tipo}/${pieza}`, { method: 'PUT', body: { condicion }, auth: true })
+export const borrarPiezaOdontograma = (pacienteId, tipo, pieza) =>
+  request(`/pacientes/${pacienteId}/odontograma/${tipo}/${pieza}`, { method: 'DELETE', auth: true })
 
 // Turnos
 export const getTurnos = () => request('/turnos', { auth: true })

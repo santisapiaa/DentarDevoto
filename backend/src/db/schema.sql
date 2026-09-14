@@ -26,14 +26,49 @@ CREATE TABLE IF NOT EXISTS servicios (
   activo BOOLEAN DEFAULT TRUE
 );
 
--- Placeholder: se termina de definir cuando tengas un fichero real a mano
 CREATE TABLE IF NOT EXISTS pacientes (
   id SERIAL PRIMARY KEY,
   nombre VARCHAR(150) NOT NULL,
   telefono VARCHAR(40),
   email VARCHAR(150),
   ultima_visita DATE,
+  domicilio VARCHAR(255),
+  localidad VARCHAR(120),
+  ocupacion VARCHAR(150),
+  fecha_nacimiento DATE,
+  obra_social VARCHAR(150),
+  nro_afiliado VARCHAR(60),
+  plan_tratamiento TEXT,
+  dientes_existentes VARCHAR(60),
+  color VARCHAR(60),
+  observaciones TEXT,
   creado_en TIMESTAMP DEFAULT NOW()
+);
+
+-- Migración para bases ya existentes (no toca nada si la columna ya está).
+ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS domicilio VARCHAR(255);
+ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS localidad VARCHAR(120);
+ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS ocupacion VARCHAR(150);
+ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS fecha_nacimiento DATE;
+ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS obra_social VARCHAR(150);
+ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS nro_afiliado VARCHAR(60);
+ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS plan_tratamiento TEXT;
+ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS dientes_existentes VARCHAR(60);
+ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS color VARCHAR(60);
+ALTER TABLE pacientes ADD COLUMN IF NOT EXISTS observaciones TEXT;
+
+-- Odontograma: un registro por pieza dentaria marcada, separado en dos
+-- grillas (como en la ficha de papel): estado_actual y tratamiento_realizado.
+-- Numeración FDI de piezas permanentes (11-48). Un solo símbolo por diente
+-- y grilla a la vez (se pisa al cambiarlo, igual que tachar y redibujar en papel).
+CREATE TABLE IF NOT EXISTS odontograma (
+  id SERIAL PRIMARY KEY,
+  paciente_id INTEGER NOT NULL REFERENCES pacientes(id) ON DELETE CASCADE,
+  tipo VARCHAR(25) NOT NULL, -- estado_actual | tratamiento_realizado
+  pieza SMALLINT NOT NULL,
+  condicion VARCHAR(40) NOT NULL,
+  actualizado_en TIMESTAMP DEFAULT NOW(),
+  UNIQUE (paciente_id, tipo, pieza)
 );
 
 CREATE TABLE IF NOT EXISTS turnos (

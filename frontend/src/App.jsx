@@ -11,6 +11,7 @@ import NotFound from './pages/NotFound.jsx'
 import AdminLayout from './admin/AdminLayout.jsx'
 import RequireAuth from './admin/RequireAuth.jsx'
 import Pacientes from './admin/Pacientes.jsx'
+import FichaPaciente from './admin/FichaPaciente.jsx'
 import Turnos from './admin/Turnos.jsx'
 import ServiciosAdmin from './admin/ServiciosAdmin.jsx'
 import Usuarios from './admin/Usuarios.jsx'
@@ -84,6 +85,7 @@ export default function App() {
       >
         <Route index element={<Pacientes />} />
         <Route path="pacientes" element={<Pacientes />} />
+        <Route path="pacientes/:id" element={<FichaPaciente />} />
         <Route path="turnos" element={<Turnos />} />
         <Route path="servicios" element={<ServiciosAdmin />} />
         <Route path="usuarios" element={<Usuarios />} />
