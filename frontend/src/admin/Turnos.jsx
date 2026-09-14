@@ -11,11 +11,17 @@ const FORM_VACIO = { paciente_id: '', paciente_nombre: '', profesional_id: '', t
 
 const ESTADO_LABEL = { confirmado: 'Confirmado', cancelado: 'Cancelado', atendido: 'Atendido' }
 
-// El input datetime-local necesita "YYYY-MM-DDTHH:mm" en hora local.
-function toInputDatetime(fechaHoraISO) {
-  const d = new Date(fechaHoraISO)
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+// fecha_hora es hora de pared sin huso horario ("2026-09-14T10:30:00").
+// El input datetime-local usa el mismo formato recortado a los minutos —
+// nada de pasar esto por un objeto Date (eso reintroduce el corrimiento de huso horario).
+function toInputDatetime(fechaHoraTexto) {
+  return fechaHoraTexto.slice(0, 16)
+}
+
+function formatFechaHora(fechaHoraTexto) {
+  const [fecha, hora] = fechaHoraTexto.split('T')
+  const [anio, mes, dia] = fecha.split('-')
+  return `${dia}/${mes}/${anio}, ${hora.slice(0, 8)}`
 }
 
 export default function Turnos() {
@@ -177,7 +183,7 @@ export default function Turnos() {
                 <td>{t.paciente_nombre || '—'}</td>
                 <td>{t.profesional_nombre || '—'}</td>
                 <td>{t.tratamiento || '—'}</td>
-                <td>{new Date(t.fecha_hora).toLocaleString('es-AR')}</td>
+                <td>{formatFechaHora(t.fecha_hora)}</td>
                 <td>{ESTADO_LABEL[t.estado] || t.estado}</td>
                 <td style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                   {t.estado === 'confirmado' && (
